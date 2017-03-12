@@ -21,6 +21,7 @@ int main(argc, argv)
 int argc;
 char **argv;
 {
+  FILE* fp;
   char *directory = conch("./",argv[1]);
   char * getinpute = falloc(char,25);
 
@@ -51,7 +52,7 @@ char **argv;
   }
   else
   {
-    FILE* fp= fopen(conch(directory,"/main.txt"), mode);//if not creat one with the filename diroctory
+    fp= fopen(conch(directory,"/main.txt"), mode);//if not creat one with the filename diroctory
     if (fp == NULL)//if the file didn`t open
     {
         printf("Error opening file!\n");
@@ -65,8 +66,8 @@ char **argv;
     }
     else
     {
-      FILE* fpf= fopen(conch(directory,"/father.txt"), mode);//if not creat one with the filename diroctory
-      if (fpf == NULL)//if the file didn`t open
+      fp= fopen(conch(directory,"/father.txt"), mode);//if not creat one with the filename diroctory
+      if (fp == NULL)//if the file didn`t open
       {
         printf("Error opening file!\n");
         exit(1);
@@ -74,7 +75,7 @@ char **argv;
       printf("plz inter the name of the Husband : ");
       scanf("%s",getinpute);
       person = new_pinputstruct(getinpute,"M");
-      fprintf(fpf, "Father: %s\nSex: %s", person->name,person->gender);
+      fprintf(fp, "Father: %s\nSex: %s", person->name,person->gender);
     }
 
   if (stat(conch(directory,"/mother.txt"), &st) != -1) {  //is the mother file exists ?
@@ -82,8 +83,8 @@ char **argv;
   }
   else
   {
-      FILE* fpm= fopen(conch(directory,"/mother.txt"), mode);//if not creat one with the filename diroctory
-      if (fpm == NULL)//if the file didn`t open
+      fp= fopen(conch(directory,"/mother.txt"), mode);//if not creat one with the filename diroctory
+      if (fp == NULL)//if the file didn`t open
       {
         printf("Error opening file!\n");
         exit(1);
@@ -91,7 +92,7 @@ char **argv;
       printf("plz inter the name of the Wife : ");
       scanf("%s",getinpute);
       person = new_pinputstruct(getinpute,"F");
-      fprintf(fpm, "Mother: %s\nSex: %s", person->name,person->gender);
+      fprintf(fp, "Mother: %s\nSex: %s", person->name,person->gender);
   }
 
   if (stat(conch(directory,"/children.txt"), &st) != -1) {  //is the children file exists ?
@@ -105,8 +106,8 @@ char **argv;
         int Wronggender = 1;
         char *name;
         char *gnder;
-        FILE* fpc= fopen(conch(directory,"/children.txt"), "a");//if not creat one with the filename diroctory
-        if (fpc == NULL)//if the file didn`t open
+        fp= fopen(conch(directory,"/children.txt"), "a");//if not creat one with the filename diroctory
+        if (fp == NULL)//if the file didn`t open
         {
           printf("Error opening file!\n");
           exit(1);
@@ -131,12 +132,11 @@ char **argv;
         }
         gnder = txtcopy(getinpute);
         person = new_pinputstruct(name,gnder);
-        fprintf(fpc, "Child: %s\nSex: %s\n", person->name,person->gender);
+        fprintf(fp, "Child: %s\nSex: %s\n", person->name,person->gender);
         printf("To add more Enter (1) otherwise Enter (0) : ");
         scanf("%d",&more);
       }
       while(more);
-      
   }
   
   
