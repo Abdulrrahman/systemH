@@ -8,7 +8,7 @@ typedef struct pinputstruct {
   char *gender;                 /* persone gender */
 } *PE;
 
-extern PE new_pinputstruct(/* persone name */);
+extern PE new_pinputstruct(/* persone name and gender */);
 extern void jettison_pinputstruct(/* IS */);
 
 #endif
