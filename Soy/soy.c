@@ -47,6 +47,19 @@ char *getfamilyname(char*directory)
   }
 }
 
+int findme(char*directory)
+{
+  struct stat st = {0};
+  if (stat(directory, &st) == -1 && S_ISDIR(st.st_mode) == 0)
+  {
+    return 0;
+  }
+  else
+  {
+    return 1;
+  }
+}
+
 void createmainfile(char *PATH,char *FamilyName)
 {
   struct stat st = {0};
@@ -71,6 +84,7 @@ void createmainfile(char *PATH,char *FamilyName)
 
 void createfatherfile(char *PATH,char *getinpute)
 {
+  IS is;
   char * getmyparents = txtcopy(PATH);
   struct stat st = {0};
   char * mode="w" ;
@@ -86,34 +100,70 @@ void createfatherfile(char *PATH,char *getinpute)
   fprintf(fp, "Father: %s\nSex: %s\n", person->name,person->gender);
   fclose(fp);
   deleteEnd(getmyparents);
+  char * me = txtcopy(getmyparents);
   getmyparents = conch(getmyparents,"/father.txt");
   fp= fopen(getmyparents, "r+");
-  if (fp == NULL)//if the file didn`t open
+  if (fp == NULL || findme(conch(me,conch("/",getinpute)))== 0)//if the file didn`t open
   {
-      fp= fopen(conch(PATH,"/father.txt"), mode);
+      fp= fopen(conch(PATH,"/father.txt"), "a+");
       fprintf(fp, "MyFather: Adam\n");
       fclose(fp);
   }
   else
   {
+    is = new_inputstruct(getmyparents);
+    int f = 0;
+    while(get_line(is) >= 0) {
+      for (int i = 0; i < is->NF; i++) {
+        if (strcmp(is->fields[i] ,"Father:") == 0 ) {
+          
+          fp= fopen(conch(PATH,"/father.txt"), "a+");
+          fprintf(fp, "MyFather: %s\n",is->fields[1]);
+          fclose(fp);
+          f=1;
+          break;
+        }
+      }
+      if(f==1)
+      {
+        break;
+      }
+    }
   }
   deleteEnd(getmyparents);
   getmyparents = conch(getmyparents,"/mother.txt");
   fp= fopen(getmyparents, "r+");
-  if (fp == NULL)//if the file didn`t open
+  if (fp == NULL || findme(conch(me,conch("/",getinpute)))== 0)//if the file didn`t open
   {
-      fp= fopen(conch(PATH,"/father.txt"), mode);
+      fp= fopen(conch(PATH,"/father.txt"), "a+");
       fprintf(fp, "MyMother: Eve\n");
       fclose(fp);
   }
   else
   {
-    fclose(fp);
+    is = new_inputstruct(getmyparents);
+    int f = 0;
+    while(get_line(is) >= 0) {
+      for (int i = 0; i < is->NF; i++) {
+        if (strcmp(is->fields[i] ,"Mother:") == 0 ) {
+          fp= fopen(conch(PATH,"/father.txt"), "a+");
+          fprintf(fp, "MyMother: %s\n",is->fields[1]);
+          fclose(fp);
+          f=1;
+          break;
+        }
+      }
+      if(f==1)
+      {
+        break;
+      }
+    }
   }
 }
 
 void createmotherfile(char *PATH,char * getinpute)
 {
+  IS is;
   char * getmyparents = txtcopy(PATH);
   struct stat st = {0};
   char * mode="w" ;
@@ -129,29 +179,64 @@ void createmotherfile(char *PATH,char * getinpute)
   fprintf(fp, "Mother: %s\nSex: %s\n", person->name,person->gender);
   fclose(fp);
   deleteEnd(getmyparents);
+  char * me = txtcopy(getmyparents);
   getmyparents = conch(getmyparents,"/father.txt");
   fp= fopen(getmyparents, "r+");
-  if (fp == NULL)//if the file didn`t open
+  if (fp == NULL || findme(conch(me,conch("/",getinpute)))== 0)//if the file didn`t open
   {
-      fp= fopen(conch(PATH,"/mother.txt"), mode);
+      fp= fopen(conch(PATH,"/mother.txt"), "a+");
       fprintf(fp, "MyFather: Adam\n");
       fclose(fp);
   }
   else
   {
+    is = new_inputstruct(getmyparents);
+    int f = 0;
+    while(get_line(is) >= 0) {
+      for (int i = 0; i < is->NF; i++) {
+        if (strcmp(is->fields[i] ,"Father:") == 0 ) {
+          
+          fp= fopen(conch(PATH,"/mother.txt"), "a+");
+          fprintf(fp, "MyFather: %s\n",is->fields[1]);
+          fclose(fp);
+          f=1;
+          break;
+        }
+      }
+      if(f==1)
+      {
+        break;
+      }
+    }
   }
   deleteEnd(getmyparents);
   getmyparents = conch(getmyparents,"/mother.txt");
   fp= fopen(getmyparents, "r+");
-  if (fp == NULL)//if the file didn`t open
+  if (fp == NULL || findme(conch(me,conch("/",getinpute)))== 0)//if the file didn`t open
   {
-      fp= fopen(conch(PATH,"/mother.txt"), mode);
+      fp= fopen(conch(PATH,"/mother.txt"), "a+");
       fprintf(fp, "MyMother: Eve\n");
       fclose(fp);
   }
   else
   {
-    fclose(fp);
+    is = new_inputstruct(getmyparents);
+    int f = 0;
+    while(get_line(is) >= 0) {
+      for (int i = 0; i < is->NF; i++) {
+        if (strcmp(is->fields[i] ,"Mother:") == 0 ) {
+          fp= fopen(conch(PATH,"/mother.txt"), "a+");
+          fprintf(fp, "MyMother: %s\n",is->fields[1]);
+          fclose(fp);
+          f=1;
+          break;
+        }
+      }
+      if(f==1)
+      {
+        break;
+      }
+    }
   }
 }
 
