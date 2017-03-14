@@ -28,6 +28,24 @@ void deleteEnd (char* myStr){
     }
 }
 
+char *getfamilyname(char*directory)
+{
+  int i;
+  IS is;
+  is = new_inputstruct(conch(directory,"/main.txt"));
+  if (is == NULL) {
+    perror(conch(directory,"/main.txt"));
+    exit(1);
+  }
+  while(get_line(is) >= 0) {
+    for (int i = 0; i < is->NF; i++) {
+      if (strcmp(is->fields[0] ,"Family-Name:") == 0 ) {       //if the folder is not exists creat else do not
+        return txtcopy(is->fields[1]);
+        break;
+      }
+    }
+  }
+}
 
 void createmainfile(char *PATH,char *FamilyName)
 {
@@ -51,117 +69,97 @@ void createmainfile(char *PATH,char *FamilyName)
   }
 }
 
-void createfatherfile(char *PATH)
+void createfatherfile(char *PATH,char *getinpute)
 {
   char * getmyparents = txtcopy(PATH);
-  char * getinpute = falloc(char,250);
   struct stat st = {0};
-  char * mode="a+" ;
+  char * mode="w" ;
   FILE *fp;
   PE person;                            //person to get the inputs with it
-
-  if (stat(conch(PATH,"/father.txt"), &st) != -1) {  //is the father file exists ?
-      printf("error the file already exists\n");
-    }
-    else
-    {
-      fp= fopen(conch(PATH,"/father.txt"), mode);//if not creat one with the filename diroctory
-      if (fp == NULL)//if the file didn`t open
-      {
-        printf("Error opening file!\n");
-        exit(1);
-      }
-      printf("plz inter the name of the Husband : ");
-      scanf("%s",getinpute);
-      person = new_pinputstruct(getinpute,"M");
-      fprintf(fp, "Father: %s\nSex: %s\n", person->name,person->gender);
+  fp= fopen(conch(PATH,"/father.txt"), mode);//if not creat one with the filename diroctory
+  if (fp == NULL)//if the file didn`t open
+  {
+    printf("Error opening file!\n");
+    exit(1);
+  }
+  person = new_pinputstruct(getinpute,"M");
+  fprintf(fp, "Father: %s\nSex: %s\n", person->name,person->gender);
+  fclose(fp);
+  deleteEnd(getmyparents);
+  getmyparents = conch(getmyparents,"/father.txt");
+  fp= fopen(getmyparents, "r+");
+  if (fp == NULL)//if the file didn`t open
+  {
+      fp= fopen(conch(PATH,"/father.txt"), mode);
+      fprintf(fp, "MyFather: Adam\n");
       fclose(fp);
-      deleteEnd(getmyparents);
-      getmyparents = conch(getmyparents,"/father.txt");
-      fp= fopen(getmyparents, "r+");
-      if (fp == NULL)//if the file didn`t open
-      {
-          fp= fopen(conch(PATH,"/father.txt"), mode);
-          fprintf(fp, "MyFather: Adam\n");
-          fclose(fp);
-      }
-      else
-      {
-      }
-      deleteEnd(getmyparents);
-      getmyparents = conch(getmyparents,"/mother.txt");
-      fp= fopen(getmyparents, "r+");
-      if (fp == NULL)//if the file didn`t open
-      {
-          fp= fopen(conch(PATH,"/father.txt"), mode);
-          fprintf(fp, "MyMother: Eve\n");
-          fclose(fp);
-      }
-      else
-      {
-        fclose(fp);
-      }
-    }
-}
-
-void createmotherfile(char *PATH)
-{
-
-  char * getmyparents = txtcopy(PATH);
-  char * getinpute = falloc(char,250);
-  struct stat st = {0};
-  char * mode="a+" ;
-  FILE *fp;
-  PE person;                            //person to get the inputs with it
-  if (stat(conch(PATH,"/mother.txt"), &st) != -1) {  //is the mother file exists ?
-      printf("error the file already exists\n");
   }
   else
   {
-      fp= fopen(conch(PATH,"/mother.txt"), mode);//if not creat one with the filename diroctory
-      if (fp == NULL)//if the file didn`t open
-      {
-        printf("Error opening file!\n");
-        exit(1);
-      }
-      printf("plz inter the name of the Wife : ");
-      scanf("%s",getinpute);
-      person = new_pinputstruct(getinpute,"F");
-      fprintf(fp, "Mother: %s\nSex: %s\n", person->name,person->gender);
+  }
+  deleteEnd(getmyparents);
+  getmyparents = conch(getmyparents,"/mother.txt");
+  fp= fopen(getmyparents, "r+");
+  if (fp == NULL)//if the file didn`t open
+  {
+      fp= fopen(conch(PATH,"/father.txt"), mode);
+      fprintf(fp, "MyMother: Eve\n");
       fclose(fp);
-      deleteEnd(getmyparents);
-      getmyparents = conch(getmyparents,"/father.txt");
-      fp= fopen(getmyparents, "r+");
-      if (fp == NULL)//if the file didn`t open
-      {
-          fp= fopen(conch(PATH,"/mother.txt"), mode);
-          fprintf(fp, "MyFather: Adam\n");
-          fclose(fp);
-      }
-      else
-      {
-      }
-      deleteEnd(getmyparents);
-      getmyparents = conch(getmyparents,"/mother.txt");
-      fp= fopen(getmyparents, "r+");
-      if (fp == NULL)//if the file didn`t open
-      {
-          fp= fopen(conch(PATH,"/mother.txt"), mode);
-          fprintf(fp, "MyMother: Eve\n");
-          fclose(fp);
-      }
-      else
-      {
-        fclose(fp);
-      }
-    }
+  }
+  else
+  {
+    fclose(fp);
+  }
+}
+
+void createmotherfile(char *PATH,char * getinpute)
+{
+  char * getmyparents = txtcopy(PATH);
+  struct stat st = {0};
+  char * mode="w" ;
+  FILE *fp;
+  PE person;                            //person to get the inputs with it
+  fp= fopen(conch(PATH,"/mother.txt"), mode);//if not creat one with the filename diroctory
+  if (fp == NULL)//if the file didn`t open
+  {
+    printf("Error opening file!\n");
+    exit(1);
+  }
+  person = new_pinputstruct(getinpute,"F");
+  fprintf(fp, "Mother: %s\nSex: %s\n", person->name,person->gender);
+  fclose(fp);
+  deleteEnd(getmyparents);
+  getmyparents = conch(getmyparents,"/father.txt");
+  fp= fopen(getmyparents, "r+");
+  if (fp == NULL)//if the file didn`t open
+  {
+      fp= fopen(conch(PATH,"/mother.txt"), mode);
+      fprintf(fp, "MyFather: Adam\n");
+      fclose(fp);
+  }
+  else
+  {
+  }
+  deleteEnd(getmyparents);
+  getmyparents = conch(getmyparents,"/mother.txt");
+  fp= fopen(getmyparents, "r+");
+  if (fp == NULL)//if the file didn`t open
+  {
+      fp= fopen(conch(PATH,"/mother.txt"), mode);
+      fprintf(fp, "MyMother: Eve\n");
+      fclose(fp);
+  }
+  else
+  {
+    fclose(fp);
+  }
 }
 
 void createchildrenfile(char *PATH)
 {
   int i;
   IS is;
-  char * getinpute = falloc(char,25);
+  char * getinpute = falloc(char,250);
   struct stat st = {0};
   char * mode="a+" ;
   FILE *fp;
@@ -226,7 +224,6 @@ void getfamilydetails(char *PATH)
   int i;
   IS is;
   char * getinpute = falloc(char,25);
-  Fa fa = falloc(struct finputstruct, 1);
 
   is = new_inputstruct(conch(PATH,"/main.txt"));
   if (is == NULL) {
@@ -286,11 +283,6 @@ void getfamilydetails(char *PATH)
     exit(1);
   }
 
-  while(get_line(is) >= 0) {
-  }
-  fa->childrenNo = (is->line/2);
-  fa->childerns = malloc(sizeof(PE) * fa->childrenNo);
-
   is = new_inputstruct(conch(PATH,"/children.txt"));
   int y = 0;
   while(get_line(is) >= 0) {
@@ -306,10 +298,43 @@ void getfamilydetails(char *PATH)
   }
 }
 
+
+void enterfather(char *directory)
+{
+  char *getinput = falloc(char,250);
+  struct stat st = {0};                //to check the address of folder we made
+  if (stat(conch(directory,"/father.txt"), &st) != -1) {  //is the father file exists ?
+      printf("error the file already exists\n");
+    }
+  else
+  {
+      printf("plz inter the name of the Husband : ");
+      scanf("%s",getinput);
+      createfatherfile(directory,getinput);
+  }
+}
+
+void entermother(char *directory)
+{
+  char *getinput = falloc(char,250);
+  struct stat st = {0};                //to check the address of folder we made
+  if (stat(conch(directory,"/mother.txt"), &st) != -1) {  //is the father file exists ?
+      printf("error the file already exists\n");
+    }
+  else
+  {
+      printf("plz inter the name of the Wife : ");
+      scanf("%s",getinput);
+      createmotherfile(directory,getinput);
+  }
+}
+
 int main(argc, argv)
 int argc;
 char **argv;
 {
+  char *getinput = falloc(char,250);
+      
   if (argc != 2) {//error checking for input of program name and the name of family-tree
     fprintf(stderr, "usage: ./soy FamilyName\n");
     exit(1);
@@ -331,11 +356,81 @@ char **argv;
   }
   
   createmainfile(directory,argv[1]);
-  createfatherfile(directory);
-  createmotherfile(directory);
+  enterfather(directory);
+  entermother(directory);
   createchildrenfile(directory);
   getfamilydetails(directory);
-  
+
+  int getout;
+  IS is;
+  PE pe;
+  do
+  {
+    getout = 0;
+
+    char *sbdirectory;
+    printf("please enter persone name to enter his family details : ");
+    scanf("%s",getinput);
+    sbdirectory = conch(directory,conch("/",getinput));
+    if (stat(sbdirectory, &st) == 0)
+    {
+      int found = 0;
+      is = new_inputstruct(conch(directory,"/children.txt"));
+      while(get_line(is) >= 0) {
+        for (int i = 0; i < is->NF; i++) {
+          if(found == 1)
+          {
+            if(strcmp(is->fields[1],"Male")== 0)
+            {
+              pe = new_pinputstruct(txtcopy(getinput),"m");
+            }
+            else
+            {
+              pe = new_pinputstruct(txtcopy(getinput),"f");
+            }
+            found = 2;
+            break;
+          }
+          if (strcmp(is->fields[1] ,getinput) == 0 ) {
+            found = 1;
+            break;
+          }
+        }
+        if(found == 2)
+        {
+          break;
+        }
+      }
+
+      if(strcmp(pe->gender,"Male")==0)
+      {
+        createmainfile(sbdirectory,getfamilyname(directory));
+        createfatherfile(sbdirectory,pe->name);
+        entermother(sbdirectory);
+        createchildrenfile(sbdirectory);
+      }
+      else if(strcmp(pe->gender,"Female")==0)
+      {
+        if (stat(conch(sbdirectory,"/main.txt"), &st) != -1)
+        {
+          printf("error the file already exists\n");
+        }
+        else{
+          printf("Please enter the family name : ");
+          scanf("%s",getinput);
+          createmainfile(sbdirectory,getinput);
+        }
+        enterfather(sbdirectory);
+        createmotherfile(sbdirectory,pe->name);
+        createchildrenfile(sbdirectory);
+      }
+    }
+    else
+    {
+      printf("Sorry this person is not exists please reEnter a correct name !!\n");
+    }
+  }
+  while(1);
   exit(0);
   return 0;
 }
