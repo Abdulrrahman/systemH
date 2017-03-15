@@ -8,11 +8,11 @@ LDIR =../lib
 # math library -lm
 LIBS=-lm 
 
-_DEPS = person.h family.h fields.h
+_DEPS = person.h fields.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 IODIR = $(IDIR)/
-_OBJ = soy.o $(IODIR)person.o $(IODIR)family.o $(IODIR)fields.o
+_OBJ = soy.o $(IODIR)person.o $(IODIR)fields.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: %.c $(DEPS)

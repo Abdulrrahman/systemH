@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <fields.h>
-#include <family.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -242,6 +241,7 @@ void createmotherfile(char *PATH,char * getinpute)
 
 void createchildrenfile(char *PATH)
 {
+  int first = 1;
   int i;
   IS is;
   char * getinpute = falloc(char,250);
@@ -261,44 +261,56 @@ void createchildrenfile(char *PATH)
         char *name;
         char *gnder;
         fp= fopen(conch(PATH,"/children.txt"), "a+");//if not creat one with the filename diroctory
-        if (fp == NULL)//if the file didn`t open
+        if(first == 1)
         {
-          printf("Error opening file!\n");
-          exit(1);
-        }
-        printf("plz inter the name of the child : ");
-        scanf("%s",getinpute);
-        name = txtcopy(getinpute);
-        getinpute = conch("/",getinpute);
-        if (stat(conch(PATH,getinpute), &st) == -1 && S_ISDIR(st.st_mode) == 0) {       //if the folder is not exists creat else do not
-          mkdir(conch(conch(PATH,"/"),name), 0755);
-          printf("plz inter the gender of the child (M/m or F/f) : ");
-          scanf("%s",getinpute);
-          while(1)
-          {
-            if(strcmp(getinpute ,"M") == 0 || strcmp(getinpute ,"m") == 0 || strcmp(getinpute ,"F") == 0|| strcmp(getinpute ,"f") == 0 )
-            {
-              break;
-            }
-            else
-            {
-              printf("Eror Incorrect \nplz reEnter the gender of the child (M/m or F/f) : ");
-              scanf("%s",getinpute);
-            }
-
-          }
-          gnder = txtcopy(getinpute);
-          person = new_pinputstruct(name,gnder);
-          fprintf(fp, "Child: %s\nSex: %s\n", person->name,person->gender);
+          printf("plz inter the NAME of the child : \n\tOr if there is NO children please enter(none): ");
         }
         else
         {
-          printf("This child: %s is already exists\n",name);
+          printf("plz inter the name of the child : ");
+        }
+        scanf("%s",getinpute);
+        if(strcmp(getinpute,"none") == 0 && first == 1)
+        {
+          int ret = remove(conch(PATH,"/children.txt"));
+          break;
+        }
+        else
+        {
+          first = 0;
+          name = txtcopy(getinpute);
+          getinpute = conch("/",getinpute);
+          if (stat(conch(PATH,getinpute), &st) == -1 && S_ISDIR(st.st_mode) == 0) {       //if the folder is not exists creat else do not
+            mkdir(conch(conch(PATH,"/"),name), 0755);
+            printf("plz inter the gender of the child (M/m or F/f) : ");
+            scanf("%s",getinpute);
+            while(1)
+            {
+              if(strcmp(getinpute ,"M") == 0 || strcmp(getinpute ,"m") == 0 || strcmp(getinpute ,"F") == 0|| strcmp(getinpute ,"f") == 0 )
+              {
+                break;
+              }
+              else
+              {
+                printf("Eror Incorrect \nplz reEnter the gender of the child (M/m or F/f) : ");
+                scanf("%s",getinpute);
+              }
+
+            }
+            gnder = txtcopy(getinpute);
+            person = new_pinputstruct(name,gnder);
+            fprintf(fp, "Child: %s\nSex: %s\n", person->name,person->gender);
+          }
+          else
+          {
+            printf("This child: %s is already exists\n",name);
+          }
+
+          printf("To add more Enter (1) otherwise Enter (0) : ");
+          scanf("%d",&more);
+          fclose(fp);
         }
         
-        printf("To add more Enter (1) otherwise Enter (0) : ");
-        scanf("%d",&more);
-        fclose(fp);
       }
       while(more);
   }
@@ -364,13 +376,13 @@ void getfamilydetails(char *PATH)
 
   is = new_inputstruct(conch(PATH,"/children.txt"));
   if (is == NULL) {
-    perror(conch(PATH,"/children.txt"));
-    exit(1);
+    printf("\nThis Persone Has no children yet ......  \n");
   }
-
-  is = new_inputstruct(conch(PATH,"/children.txt"));
-  int y = 0;
-  while(get_line(is) >= 0) {
+  else
+  {
+    is = new_inputstruct(conch(PATH,"/children.txt"));
+    int y = 0;
+    while(get_line(is) >= 0) {
      for (int i = 0; i < is->NF; i++) {
       if (strcmp(is->fields[i] ,"Child:") == 0 ) {
         getinpute = txtcopy(is->fields[1]);
@@ -380,7 +392,9 @@ void getfamilydetails(char *PATH)
         printf("Sex = %s\n",is->fields[1]);
       }
      }
+    }
   }
+  
 }
 
 
@@ -425,6 +439,7 @@ char **argv;
     exit(1);
   }
 
+  char *mainDirectory = conch("./",argv[1]);
   char *directory = conch("./",argv[1]);
   struct stat st = {0};                //to check the address of folder we made
 
@@ -444,6 +459,7 @@ char **argv;
   enterfather(directory);
   entermother(directory);
   createchildrenfile(directory);
+  printf("Current diroctory : %s\n", directory);
   getfamilydetails(directory);
 
   int getout;
@@ -454,68 +470,130 @@ char **argv;
     getout = 0;
 
     char *sbdirectory;
-    printf("please enter persone name to enter his family details : ");
-    scanf("%s",getinput);
-    sbdirectory = conch(directory,conch("/",getinput));
-    if (stat(sbdirectory, &st) == 0)
+    printf("\nto see children families Enter 1 :\n");
+    printf("to enter children family details Enter 2 :\n");
+    printf("to go back Enter 4 :\n");
+    printf("to exit Enter 5 :\n");
+    printf("please select : ");
+    scanf("%d",&getout);
+    switch(getout)
     {
-      int found = 0;
-      is = new_inputstruct(conch(directory,"/children.txt"));
-      while(get_line(is) >= 0) {
-        for (int i = 0; i < is->NF; i++) {
-          if(found == 1)
+      case 1:
+      {
+        printf("please enter child name to see his/her family details : ");
+        scanf("%s",getinput);
+        sbdirectory = conch(directory,conch("/",getinput));
+        if (stat(sbdirectory, &st) == 0)
+        {
+          if (stat(conch(sbdirectory,"/main.txt"), &st) != -1) {  //is the file exists ?
+            directory = txtcopy(sbdirectory);
+            printf("Current diroctory : %s\n", directory);
+            getfamilydetails(directory);
+          }
+          else
           {
-            if(strcmp(is->fields[1],"Male")== 0)
-            {
-              pe = new_pinputstruct(txtcopy(getinput),"m");
-            }
-            else
-            {
-              pe = new_pinputstruct(txtcopy(getinput),"f");
-            }
-            found = 2;
-            break;
-          }
-          if (strcmp(is->fields[1] ,getinput) == 0 ) {
-            found = 1;
-            break;
+            printf("\nThis Person is single for God sake ..... \n");
           }
         }
-        if(found == 2)
+        else
         {
-          break;
+          printf("Sorry this person is not exists please reEnter a correct name !!\n");
         }
+        break;
       }
-
-      if(strcmp(pe->gender,"Male")==0)
+      case 2:
       {
-        createmainfile(sbdirectory,getfamilyname(directory));
-        createfatherfile(sbdirectory,pe->name);
-        entermother(sbdirectory);
-        createchildrenfile(sbdirectory);
-      }
-      else if(strcmp(pe->gender,"Female")==0)
-      {
-        if (stat(conch(sbdirectory,"/main.txt"), &st) != -1)
+        printf("please enter child name to enter his/her family details : ");
+        scanf("%s",getinput);
+        sbdirectory = conch(directory,conch("/",getinput));
+        if (stat(sbdirectory, &st) == 0)
         {
-          printf("error the file already exists\n");
+          int found = 0;
+          is = new_inputstruct(conch(directory,"/children.txt"));
+          while(get_line(is) >= 0) {
+            for (int i = 0; i < is->NF; i++) {
+              if(found == 1)
+              {
+                if(strcmp(is->fields[1],"Male")== 0)
+                {
+                  pe = new_pinputstruct(txtcopy(getinput),"m");
+                }
+                else
+                {
+                  pe = new_pinputstruct(txtcopy(getinput),"f");
+                }
+                found = 2;
+                break;
+              }
+              if (strcmp(is->fields[1] ,getinput) == 0 ) {
+                found = 1;
+                break;
+              }
+            }
+            if(found == 2)
+            {
+              break;
+            }
+          }
+        
+          if(strcmp(pe->gender,"Male")==0)
+          {
+            createmainfile(sbdirectory,getfamilyname(directory));
+            createfatherfile(sbdirectory,pe->name);
+            entermother(sbdirectory);
+            createchildrenfile(sbdirectory);
+          }
+          else if(strcmp(pe->gender,"Female")==0)
+          {
+            if (stat(conch(sbdirectory,"/main.txt"), &st) != -1)
+            {
+              printf("error the file already exists\n");
+            }
+            else{
+              printf("Please enter the family name : ");
+              scanf("%s",getinput);
+              createmainfile(sbdirectory,getinput);
+            }
+            enterfather(sbdirectory);
+            createmotherfile(sbdirectory,pe->name);
+            createchildrenfile(sbdirectory);
+          }
+          directory = txtcopy(sbdirectory);
+          printf("Current diroctory : %s\n", directory);
+          getfamilydetails(directory);
         }
-        else{
-          printf("Please enter the family name : ");
-          scanf("%s",getinput);
-          createmainfile(sbdirectory,getinput);
+        else
+        {
+          printf("Sorry this person is not exists please reEnter a correct name !!\n");
         }
-        enterfather(sbdirectory);
-        createmotherfile(sbdirectory,pe->name);
-        createchildrenfile(sbdirectory);
+        break;
+      }
+      case 4:
+      {
+        if(strcmp(directory,mainDirectory) == 0)
+        {
+          printf("\nyou Cant go back you already at the top of the tree .......\n");
+        }
+        else
+        {
+          deleteEnd(directory);
+          printf("Current diroctory : %s\n", directory);
+          getfamilydetails(directory);
+        }
+        break;
+      }
+      case 5:
+      {
+        break;
+      }
+      default:
+      {
+        break;
       }
     }
-    else
-    {
-      printf("Sorry this person is not exists please reEnter a correct name !!\n");
-    }
+    
   }
-  while(1);
+  while(getout!=5);
   exit(0);
   return 0;
 }
