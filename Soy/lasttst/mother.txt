@@ -1,4 +1,0 @@
-Mother: her
-Sex: Female
-MyFather: Adam
-MyMother: Eve
