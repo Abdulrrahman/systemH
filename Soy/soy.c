@@ -66,7 +66,7 @@ void createmainfile(char *PATH,char *FamilyName)
   FILE *fp;
 
   if (stat(conch(PATH,"/main.txt"), &st) != -1) {  //is the file exists ?
-    printf("error the file already exists\n");
+    printf("worrning the main file already exists\n");
   }
   else
   {
@@ -250,7 +250,7 @@ void createchildrenfile(char *PATH)
   FILE *fp;
   PE person;                            //person to get the inputs with it
   if (stat(conch(PATH,"/children.txt"), &st) != -1) {  //is the children file exists ?
-      printf("error the file already exists\n");
+      printf("worrning the children file already exists\n");
   }
   else
   {
@@ -292,7 +292,7 @@ void createchildrenfile(char *PATH)
               }
               else
               {
-                printf("Eror Incorrect \nplz reEnter the gender of the child (M/m or F/f) : ");
+                printf("Eror Incorrect \nplz reEnter the SEX of the child (M/m or F/f) : ");
                 scanf("%s",getinpute);
               }
 
@@ -376,7 +376,7 @@ void getfamilydetails(char *PATH)
 
   is = new_inputstruct(conch(PATH,"/children.txt"));
   if (is == NULL) {
-    printf("\nThis Persone Has no children yet ......  \n");
+    printf("\nThis Family Has no children yet ......  \n");
   }
   else
   {
@@ -403,11 +403,11 @@ void enterfather(char *directory)
   char *getinput = falloc(char,250);
   struct stat st = {0};                //to check the address of folder we made
   if (stat(conch(directory,"/father.txt"), &st) != -1) {  //is the father file exists ?
-      printf("error the file already exists\n");
+      printf("Worrning the father file already exists\n");
     }
   else
   {
-      printf("plz inter the name of the Husband : ");
+      printf("plz inter the name of the PERSONE Husband : ");
       scanf("%s",getinput);
       createfatherfile(directory,getinput);
   }
@@ -418,11 +418,11 @@ void entermother(char *directory)
   char *getinput = falloc(char,250);
   struct stat st = {0};                //to check the address of folder we made
   if (stat(conch(directory,"/mother.txt"), &st) != -1) {  //is the father file exists ?
-      printf("error the file already exists\n");
+      printf("Worning the Mother file already exists\n");
     }
   else
   {
-      printf("plz inter the name of the Wife : ");
+      printf("plz inter the name of the Wife PERSONE: ");
       scanf("%s",getinput);
       createmotherfile(directory,getinput);
   }
@@ -452,7 +452,7 @@ char **argv;
   }
   else
   {
-    printf("error the file already exists\n");
+    printf("This family is already exists\n");
   }
   
   createmainfile(directory,argv[1]);
@@ -472,8 +472,8 @@ char **argv;
     char *sbdirectory;
     printf("\nto see children families Enter 1 :\n");
     printf("to enter children family details Enter 2 :\n");
-    printf("to go back Enter 4 :\n");
-    printf("to exit Enter 5 :\n");
+    printf("to go back Enter 3 :\n");
+    printf("to exit Enter 4 :\n");
     printf("please select : ");
     scanf("%d",&getout);
     switch(getout)
@@ -568,7 +568,7 @@ char **argv;
         }
         break;
       }
-      case 4:
+      case 3:
       {
         if(strcmp(directory,mainDirectory) == 0)
         {
@@ -582,7 +582,7 @@ char **argv;
         }
         break;
       }
-      case 5:
+      case 4:
       {
         break;
       }
